@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Script Runner</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-6">
+            <img src="https://via.placeholder.com/300x300.png?text=Image" class="img-fluid" alt="Image">
+        </div>
+        <div class="col-md-6 text-center">
+            <button class="btn btn-primary btn-lg btn-block" data-script="script1.py">Script 1</button>
+            <button class="btn btn-primary btn-lg btn-block" data-script="script2.py">Script 2</button>
+            <button class="btn btn-primary btn-lg btn-block" data-script="script3.py">Script 3</button>
+            <button class="btn btn-primary btn-lg btn-block" data-script="script4.py">Script 4</button>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center mt-5" id="loading" style="display:none;">
+        <div class="col-md-6 text-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-2">Running Script...</p>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center" id="success" style="display:none;">
+        <div class="col-md-6 text-center">
+            <div class="alert alert-success" role="alert">
+                <strong>Success!</strong> Script executed successfully.
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center" id="error" style="display:none;">
+        <div class="col-md-6 text-center">
+            <div class="alert alert-danger" role="alert">
+                <strong>Error!</strong> An error occurred while executing the script. Please try again.
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center" id="preview" style="display:none;">
+        <div class="col-md-6 text-center">
+            <img id="preview-image" class="img-fluid" src="" alt="">
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center" id="images" style="display:none;">
+    </div>
+</div>
+<div class="modal fade" id="image-modal" tabindex="-1" role="dialog" aria-labelledby="image-modal-label"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+    <h5 class="modal-title" id="image-modal-label">Image Preview</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <img id="preview-image" class="img-fluid mx-auto d-block" src="" alt="">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('button[data-script]').on('click', function () {
+            var script = $(this).data('script');
+            $('#loading').show();
+            $('#success').hide();
+            $('#error').hide();
+            $('#images').hide();
+
+            $.ajax({
+                url: '/run_script',
+                type: 'POST',
+                data: {script: script},
+                success: function (response) {
+                    $('#loading').hide();
+                    if (response.success) {
+                        $('#success').show();
+                        if (response.images) {
+                            $('#images').empty();
+                            $.each(response.images, function (index, image) {
+                                $('#images').append('<div class="col-md-3 mb-3"><a href="#" data-toggle="modal" data-target="#image-modal"><img class="img-fluid" src="' + image + '"></a></div>');
+                            });
+                            $('#images').show();
+                        }
+                    } else {
+                        $('#error').show();
+                    }
+                },
+                error: function () {
+                    $('#loading').hide();
+                    $('#error').show();
+                }
+            });
+        });
+
+        $('#image-modal').on('show.bs.modal', function (event) {
+            var image = $(event.relatedTarget).find('img').attr('src');
+            $('#preview-image').attr('src', image);
+        });
+    });
+</script>
