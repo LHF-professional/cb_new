@@ -1,0 +1,72 @@
+To change your code from Tkinter to Flask, you'll need to create a Flask web application and modify your chatbot code to work with it. Here's an example of how to create a simple Flask web application for your chatbot:
+
+    Install Flask if you haven't already: pip install flask
+    Create a new file named app.py and add the following code:
+
+
+from flask import Flask, render_template, request, jsonify
+import json
+from chatbot_utils import Chat, pairs, reflections
+
+app = Flask(__name__)
+chat = Chat(pairs, reflections)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_input = request.form['user_input']
+    response = chat.respond(user_input)
+    return jsonify({'response': response})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+Create a new folder named templates in the same directory as app.py. Inside the templates folder, create a new file named index.html and add the following code
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chat">
+        <div id="messages"></div>
+        <form id="chat_form">
+            <input type="text" id="user_input" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#chat_form').submit(function(e) {
+                e.preventDefault();
+                let user_input = $('#user_input').val();
+                if (user_input.length > 0) {
+                    $('#messages').append('<p>You: ' + user_input + '</p>');
+                    $.post('/chat', {user_input: user_input}, function(data) {
+                        let response = data.response;
+                        $('#messages').append('<p>Chatbot: ' + response + '</p>');
+                    });
+                }
+                $('#user_input').val('');
+            });
+        });
+    </script>
+</body>
+</html>
+    Make sure your chatbot code is in a file named chatbot_utils.py and the Chat class, pairs, and reflections are imported in app.py.
+
+    Run the Flask app by executing the app.py file: python app.py
+
+    Open a web browser and go to http://127.0.0.1:5000/ to access the chatbot through the Flask web application.
+
+
+
