@@ -1,61 +1,78 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, jsonify, request
 import time
+from random import randrange
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        a = request.form.get('firstInput')
+        b = request.form.get('secondInput')
+        return jsonify({'message': 'Success', 'a': a, 'b': b})
     return render_template('index.html')
 
-@app.route('/button1', methods=['POST'])
-def button1():
-    if request.method == 'POST':
-        # Disable the button
-        button_id = request.form['button_id']
-        response = {'button_id': button_id}
-        return jsonify(response)
 
-@app.route('/button2', methods=['POST'])
-def button2():
-    if request.method == 'POST':
-        # Disable the button
-        button_id = request.form['button_id']
-        response = {'button_id': button_id}
+@app.route('/button_1/')
+def button_1():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'One'})
 
-        # Run script
-        time.sleep(5)
 
-        # Display images
-        image_urls = ['image1.jpg', 'image2.jpg', 'image3.jpg']
-        return jsonify({'image_urls': image_urls})
+@app.route('/button_2/')
+def button_2():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Two'})
 
-@app.route('/button3', methods=['POST'])
-def button3():
-    if request.method == 'POST':
-        # Disable the button
-        button_id = request.form['button_id']
-        response = {'button_id': button_id}
 
-        # Run script
-        time.sleep(5)
+@app.route('/button_3/')
+def button_3():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Three'})
 
-        # Display success message
-        message = 'Button 3 executed successfully'
-        return jsonify({'message': message})
 
-@app.route('/button4', methods=['POST'])
-def button4():
-    if request.method == 'POST':
-        # Disable the button
-        button_id = request.form['button_id']
-        response = {'button_id': button_id}
+@app.route('/button_4/')
+def button_4():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Four', 'status': 400}), 400
 
-        # Run script
-        time.sleep(5)
 
-        # Display error message
-        message = 'An error occurred while executing Button 4'
-        return jsonify({'message': message})
+@app.route('/button_5/')
+def button_5():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Five'})
+
+
+@app.route('/button_6/')
+def button_6():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Six'})
+
+
+@app.route('/button_7/')
+def button_7():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Seven'})
+
+
+@app.route('/button_8/')
+def button_8():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Eight'})
+
+
+@app.route('/button_9/')
+def button_9():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Nine'})
+
+
+@app.route('/button_10/')
+def button_10():
+    time.sleep(randrange(1, 2))
+    return jsonify({'message': 'Ten'})
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
